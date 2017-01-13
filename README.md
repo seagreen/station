@@ -2,17 +2,27 @@
 
 Extremely experimental. See [development.md](./docs/development.md) for details.
 
-# What is it?
+# Motivation
 
-Three things:
+Websites have pages.
+
+Webapps have posts.
+
+Unix systems have hierarchical files.
+
+None of these provide a solid foundation for personal computing. Let's see if we can do better.
+
+# What's in this project?
+
+Four things:
 
 1. An idea: the _card_. A card is an immutable piece of data containing two [content-addressed](https://en.wikipedia.org/wiki/Content-addressable_storage) links-- one to a schema and another to a piece of data that's an instance of that schema. It may also contain other information about the instance such as its name, source, and date of creation.
 
-  Cards are intended to provide a more solid foundation for building user environments than traditional files.
+  Some advantes of this design are listed [here](./docs/advantages.md).
 
 2. A second idea: the _card store_. This is simply a datastore built on cards.
 
-2. A specification for the first card store: _Station_.
+3. A specification for the first card store: _Station_.
 
 3. A Haskell library for interacting with Station stores: `station`.
 
@@ -20,13 +30,7 @@ Three things:
 
 Station's main inspirations are [Tent](https://tent.io/) and [Camlistore](https://camlistore.org/). A discussion of the similarities and differences between the projects is [here](./docs/inspirations.md).
 
-# Motivation
-
-We need a better datastore for personal computing. Our current hierarchical filesystems work OK, but aren't convenient enough to compete with webapps.
-
-This datastore should be immutable and have version control built-in. It should use tags instead of a hierarchy. It should use unique IDs instead of names to address entries. And it should enforce the correctness of each piece of data, so that an entry with the contents `notactually"json` cannot declare itself to be a JSON document.
-
-# Station's Design
+# Design
 
 Card stores are built in layers of abstraction. Higher layers know about lower layers but not vice-versa. We'll explore these layers using examples from the first card store implementation, _Station_.
 
@@ -123,13 +127,13 @@ Cards can also contain additional information like name, original author, etc. A
 }
 ```
 
-The ideal of cards is that two people on two different sides of the world studying the same piece of data will eventually come up with the same card. While this isn't realistic in practice, it does limit the type of information cards can contain. Cards only contain information about the data they describe, never about the card itself (such as its creator or the last date it was modified).
+The ideal of cards is that two people on two different sides of the world studying the same piece of data will eventually come up with the same card. While this isn't realistic in practice, it does limit the type of information cards can contain. Cards only contain information about the data they describe, never about the card itself (such as its creator, [GUID](https://en.wikipedia.org/wiki/Globally_unique_identifier) or the date it was last modified).
 
 ## Layer 3 - Versions
 
 All versions are also blobs. Each must conform to a [hardcoded schema](schemas/human-optimized/version.json).
 
-A version contains information about a card itself. This includes the ID of the card, any parent versions (directly analogous to parent commits in other VCSes), and the time the version was created. Versions measure time in [TAI](https://en.wikipedia.org/wiki/International_Atomic_Time) seconds since the Unix Epoch (TAI seconds are just normal, real life seconds-- leap seconds have no place in a standard like this one).
+A version contains information about a card itself. This includes the GUID of the card, any parent versions (directly analogous to parent commits in other VCSes), and the time the version was created. Versions measure time in [TAI](https://en.wikipedia.org/wiki/International_Atomic_Time) seconds since the Unix Epoch (TAI seconds are just normal, real life seconds-- leap seconds have no place in a standard like this one).
 
 Let's say the hash of our card above is `defg`. Its version might then be:
 ```json
