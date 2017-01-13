@@ -1,0 +1,51 @@
+{
+  "type": "object",
+  "required": [
+    "id",
+    "parents",
+    "card"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parents": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "hashOf": {
+          "$ref": "#"
+        }
+      }
+    },
+    "card": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "hashOf": {
+            "$ref": "card:?id=a7917e8d-8ef3-44d0-bb27-f2ac0edc3851&hash=blake2b-64ue:{cardInstance}"
+          }
+        }
+      ]
+    },
+    "authors": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "linkTo": {
+          "$ref": "card:?id=23d8b2a7-6e6e-4ef4-8453-43ad8c09264e&version=blake2b-64ue:{authorFront}"
+        }
+      }
+    },
+    "time": {
+      "type": "number"
+    }
+  }
+}

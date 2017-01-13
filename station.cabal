@@ -1,0 +1,169 @@
+name:               station
+version:            0.1.0.0
+synopsis:           A JSON Schema datastore for small applications
+homepage:           https://github.com/seagreen/station
+license:            MIT
+license-file:       MIT-LICENSE.txt
+author:             Ian Grant Jeffries
+maintainer:         ian@housejeffries.com
+build-type:         Simple
+cabal-version:      >=1.10
+extra-source-files:
+  schemas/canonical/*.json
+  schemas/human-optimized/*.json
+
+library
+  hs-source-dirs:
+    src
+  default-language: Haskell2010
+  default-extensions:
+    DeriveFunctor
+    DeriveGeneric
+    FlexibleContexts
+    FlexibleInstances
+    GeneralizedNewtypeDeriving
+    NoImplicitPrelude
+    OverloadedStrings
+    ScopedTypeVariables
+    StrictData
+    TupleSections
+  ghc-options:
+    -Wall
+  exposed-modules:
+    Base64URL
+    Station
+    Station.Implementation
+    Station.Implementation.PlainFilesystem
+    Station.JSON
+    Station.Lookup
+    Station.Original
+    Station.Procedures.Add
+    Station.Procedures.Build
+    Station.Procedures.General
+    Station.Schema
+    Station.Schema.Failure
+    Station.Schema.Validator.HashOf
+    Station.Schema.Validator.LinkTo
+    Station.Schema.Validator.Ref
+    Station.Types
+    Station.Types.Card
+    Station.Types.Card.Hardcoded
+    Station.Types.Card.Hash
+    Station.Types.Card.Id
+    Station.Types.Card.Link
+    Station.Types.Card.Time
+    Station.Types.Card.URI
+    Station.Types.Deck
+    Station.Types.Implementation
+    Station.Types.Version
+    Station.Types.VersionContext
+  other-modules:
+    Import
+  build-depends:
+      base                  >= 4.9 && < 4.10
+    , aeson                 >= 1.0 && < 1.2
+    , aeson-pretty          >= 0.8 && < 0.9
+    , base64-bytestring     >= 1.0 && < 1.1
+    , blake2                >= 0.2 && < 0.3
+    , bytestring            >= 0.10 && < 0.11
+    , containers            >= 0.5 && < 0.6
+    , directory             >= 1.2 && < 1.4
+    , exceptions            >= 0.8 && < 0.9
+    , file-embed            >= 0.0 && < 0.1
+    , filepath              >= 1.4 && < 1.5
+    , hashable              >= 1.2 && < 1.3
+    , hjsonschema           >= 1.4 && < 1.5
+    , leapseconds-announced >= 2017
+    , lens-aeson            >= 1.0 && < 1.1
+    , microlens             >= 0.4 && < 0.5
+    , microlens-th          >= 0.4 && < 0.5
+    , pipes                 >= 4.1 && < 4.4
+    , profunctors           >= 5.2 && < 5.3
+    , protolude             >= 0.1.10 && < 0.2
+    , QuickCheck            >= 2.8 && < 2.10
+    , scientific            >= 0.3 && < 0.4
+    , text                  >= 1.2 && < 1.3
+    , time                  >= 1.6 && < 1.8
+    , transformers-base     >= 0.4 && < 0.5
+    , turtle                >= 1.2 && < 1.3
+    , unordered-containers  >= 0.2 && < 0.3
+    , uri-bytestring        >= 0.2 && < 0.3
+    , uuid                  >= 1.3 && < 1.4
+    , vector                >= 0.11 && < 0.12
+
+executable canonicalize-schemas
+  hs-source-dirs:
+    schemas
+  default-language: Haskell2010
+  default-extensions:
+    NoImplicitPrelude
+    OverloadedStrings
+    ScopedTypeVariables
+    StrictData
+    TupleSections
+  ghc-options:
+    -Wall
+  main-is: Main.hs
+  build-depends:
+      base
+    , bytestring
+    , directory
+    , filepath
+    , protolude
+    , station
+    , text
+    , transformers
+
+test-suite test
+  hs-source-dirs:
+    test
+  main-is: Test.hs
+  default-language: Haskell2010
+  type: exitcode-stdio-1.0
+  default-extensions:
+    NoImplicitPrelude
+    OverloadedStrings
+    ScopedTypeVariables
+    StrictData
+    TupleSections
+  ghc-options:
+    -Wall
+    -fno-warn-orphans
+  other-modules:
+    Import
+    Test.Hash
+    Test.Link
+    Test.Time
+    Test.URI
+    Test.Integration
+    Test.Integration.Schema
+  build-depends:
+      aeson
+    , aeson-pretty
+    , base
+    , base16-bytestring
+    , base64-bytestring
+    , blake2
+    , bytestring
+    , containers
+    , directory
+    , file-embed
+    , filepath
+    , hashable
+    , hjsonschema
+    , microlens
+    , mtl
+    , pipes
+    , profunctors
+    , protolude
+    , QuickCheck
+    , scientific
+    , station
+    , text
+    , time
+    , transformers
+    , turtle
+    , unordered-containers
+    , uri-bytestring
+    , vector
+    , hspec >= 2.2 && < 2.4

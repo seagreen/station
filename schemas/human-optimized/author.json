@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "required": [
+    "stations"
+  ],
+  "properties": {
+    "stations": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

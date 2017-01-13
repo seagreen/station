@@ -1,0 +1,1 @@
+{"properties":{"stations":{"items":{"minLength":1,"type":"string"},"minItems":1,"type":"array","uniqueItems":true}},"required":["stations"],"type":"object"}

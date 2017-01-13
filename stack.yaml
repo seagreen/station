@@ -1,0 +1,24 @@
+resolver: lts-7.15
+packages:
+  - '.'
+extra-deps:
+
+ # Essential to the project
+ # =====
+
+ - hjsonschema-1.4.0.0
+ - hjsonpointer-1.1.0.1
+ - aeson-1.1.0.0
+
+ # Not essential to the project, just things we want to test out:
+ # =====
+
+ - QuickCheck-2.9.2
+ # - directory-1.3.0.0
+ - pipes-4.3.2
+ # - time-1.7.0.1
+ # - turtle-1.3.0
+
+nix:
+  enable: true
+  shell-file: shell.nix

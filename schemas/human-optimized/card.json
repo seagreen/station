@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "required": [
+    "schema",
+    "instance"
+  ],
+  "properties": {
+    "schema": {
+      "type": "object",
+      "linkTo": {
+        "$ref": "card:?id=7f353b01-7c7a-419c-a026-548b20394031&version=blake2b-64ue:{metaVersion}"
+      }
+    },
+    "instance": {
+      "type": "object"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

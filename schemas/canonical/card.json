@@ -1,0 +1,1 @@
+{"properties":{"instance":{"type":"object"},"name":{"minLength":1,"type":"string"},"schema":{"linkTo":{"$ref":"card:?id=7f353b01-7c7a-419c-a026-548b20394031&version=blake2b-64ue:6sZrwr61VVVdqvioSeQQpLzWIveeyDk3grCiv10ge6I4wU3Mxp7_aVHvDdcpfEBCusgu5GiQEnuI4L65w5Cx9w"},"type":"object"}},"required":["schema","instance"],"type":"object"}
