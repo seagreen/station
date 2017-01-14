@@ -40,8 +40,7 @@ data ValidatorFailure
 
     | FailureMaxProperties     VAL.MaxPropertiesInvalid
     | FailureMinProperties     VAL.MinPropertiesInvalid
-    | FailureRequired          () -- VAL.RequiredInvalid -- TODO: fix when
-                                  -- new hjsonschema is published
+    | FailureRequired          VAL.RequiredInvalid
     | FailureDependencies      (VAL.DependenciesInvalid ValidatorFailure)
     | FailurePropertiesRelated (VAL.PropertiesRelatedInvalid ValidatorFailure)
 

@@ -6,7 +6,7 @@ extra-deps:
  # Essential to the project
  # =====
 
- - hjsonschema-1.4.0.0
+ - hjsonschema-1.5.0.0
  - hjsonpointer-1.1.0.1
  - aeson-1.1.0.0
 
