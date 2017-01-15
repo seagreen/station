@@ -18,7 +18,7 @@ Four things:
 
 1. An idea: the _card_. A card is an immutable piece of data containing two [content-addressed](https://en.wikipedia.org/wiki/Content-addressable_storage) links-- one to a schema and another to a piece of data that's an instance of that schema. It may also contain other information about the instance such as its name, source, and date of creation.
 
-  Some advantes of this design are listed [here](./docs/advantages.md).
+  Some advantages of this design are listed [here](./docs/advantages.md).
 
 2. A second idea: the _card store_. This is simply a datastore built on cards.
 
