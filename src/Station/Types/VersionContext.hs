@@ -27,6 +27,12 @@ data VersionContext a = VersionContext
     , _vcLocation :: NonEmpty VersionLocation
     } deriving (Eq, Show, Functor)
 
+linkFromVersionContext :: VersionContext a -> Link VersionHash
+linkFromVersionContext vc = Link
+    { _linkId   = _versionId (_vcVersion vc)
+    , _linkHash = _vcHash vc
+    }
+
 -- * Lenses
 
 makeLenses ''VersionLocation

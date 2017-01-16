@@ -94,17 +94,18 @@ test = do
             arrayN <- SN.versionCount arrayId
             liftIO $ arrayN `shouldBe` 1
 
-            void . shouldBeRight =<< SN.update arrayId objectCard
+            newLinkHash <- shouldBeRight =<< SN.update arrayLink objectCard
             arrayNUpdated <- SN.versionCount arrayId
             liftIO $ arrayNUpdated `shouldBe` 2
 
-            void . shouldBeRight =<< SN.update arrayId objectCard -- This shouldn't do anything.
+            void . shouldBeRight =<< SN.update (arrayLink&ST.linkHash.~newLinkHash)
+                                               objectCard -- This shouldn't do anything.
             arrayNUnchanged <- SN.versionCount arrayId
             liftIO $ arrayNUnchanged `shouldBe` 2
 
             -- Test deletion
 
-            SN.archive (ST._linkId objectLink)
+            SN.archive objectLink
 
             -- Test that the store in memory equals that on disk
 

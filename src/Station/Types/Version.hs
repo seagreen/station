@@ -58,7 +58,7 @@ makeLenses ''Version
 data ToContentsFailure
     = TCNoCard CardHash
     | TCCardMagDecode Text
-    | TCCardFromMag CardMag
+    | TCCardFromMag (Card BlobHash)
     deriving (Eq, Show, Typeable)
 
 instance Exception ToContentsFailure

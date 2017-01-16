@@ -24,20 +24,16 @@ import           Station.Types
 
 -- * Main API
 --
--- These are your basic CURD operations:
--- Create -- Update -- Read -- Delete.
---
--- Though in this case they've been renamed to:
--- New -- Update -- Resolve -- Archive.
+-- These are your basic CRUD operations (only renamed).
 --
 -- This is definitely a datastore and not a database. To perform more
 -- compicated queries than 'resolve' you have to get the 'Deck' value
 -- out of the @MonadState@ and examine it manually.
 
-new     :: Station m n =>       CardBytes -> m (Either Invalid (Link VersionHash))
-update  :: Station m n => Id -> CardBytes -> m (Either Invalid VersionHash)
-resolve :: Station m n => Id              -> m (Maybe VersionInfo)
-archive :: Station m n => Id              -> m ()
+resolve :: Station m n => Id                            -> m (Maybe VersionInfo)
+new     :: Station m n =>                     CardBytes -> m (Either Invalid (Link VersionHash))
+update  :: Station m n => Link VersionHash -> CardBytes -> m (Either Invalid VersionHash)
+archive :: Station m n => Link VersionHash              -> m ()
 
 new card = do
     station <- ask
@@ -54,6 +50,12 @@ data CardNotFound
 
 instance Exception CardNotFound
 
+data ParentHasChanged
+    = ParentHasChanged Id VersionHash VersionHash
+    deriving (Show, Typeable)
+
+instance Exception ParentHasChanged
+
 data IdConflict
     = IdConflict Id [VersionInfo]
     | IdConflictHashes Id [VersionHash]
@@ -61,12 +63,15 @@ data IdConflict
 
 instance Exception IdConflict
 
-update i card = do
+update (Link i argHash) card = do
     station <- ask
     deck    <- get
     case SP.resolveId deck i of
         []       -> throwM (CardNotFound i)
         [parent] -> do
+            let parentHash = _vcHash parent
+            when (argHash /= parentHash)
+                 (throwM (ParentHasChanged i argHash parentHash))
             res <- SPA.add station deck i (Just parent) card
             case res of
                 Left e             -> pure (Left e)
@@ -81,19 +86,19 @@ resolve i = do
         versionInfos  -> throwM (IdConflict i versionInfos)
 
 -- NOTE: If the target card isn't found then nothing happens.
---
--- At the moment this doesn't support deleting multiple versions if there's a
--- version conflict, but that may change.
-archive i = do
+archive (Link i argHash) = do
     station <- ask
     tm      <- liftBase (_imGetTAI (_stationImplementation station))
     deck    <- get
     case SP.resolveId deck i of
         []       -> pure ()
         [parent] -> do
+            let parentHash = _vcHash parent
+            when (argHash /= parentHash)
+                 (throwM (ParentHasChanged i argHash parentHash))
             let version = Version
                     { _versionId      = i
-                    , _versionParents = pure (_vcHash parent)
+                    , _versionParents = pure parentHash
                     , _versionCard    = Nothing
                     , _versionAuthors = _stationAuthors station
                     , _versionTime    = Just tm
@@ -138,47 +143,6 @@ versionCount i = do
                     [parentHash] -> f deck (n+1) parentHash
                     parents      -> throwM (IdConflictHashes i parents)
 
--- | 'update' if the 'Id' already exists, 'new' if not.
-set :: Station m n
-    => Id
-    -> CardBytes
-    -> m (Either Invalid VersionHash)
-set i card = do
-    station     <- ask
-    deck        <- get
-    newOrParent <- case SP.resolveId deck i of
-                       []       -> pure Nothing
-                       [parent] -> pure (Just parent)
-                       parents  -> throwM (IdConflict i parents)
-    res <- SPA.add station deck i newOrParent card
-    case res of
-        Left e             -> pure (Left e)
-        Right (deck',hash) -> put deck' >> pure (Right hash)
-
--- | Like 'set', but if the card exists keep the lined side the same.
-setUnlined
-    :: Station m n
-    => Id
-    -> CardBytes
-    -> m (Either Invalid VersionHash)
-setUnlined i card = do
-    station     <- ask
-    deck        <- get
-    newOrParent <- case SP.resolveId deck i of
-                       []       -> pure Nothing
-                       [parent] -> pure (Just parent)
-                       parents  -> throwM (IdConflict i parents)
-    let cardToInsert = case newOrParent of
-                           Nothing     -> card
-                           Just parent ->
-                               case _versionCard (_vcVersion parent) of
-                                   Nothing        -> card
-                                   Just (_,pCard) -> pCard&cardInstance.~_cardInstance card
-    res <- SPA.add station deck i newOrParent cardToInsert
-    case res of
-        Left e             -> pure (Left e)
-        Right (deck',hash) -> put deck' >> pure (Right hash)
-
 -- | A glorified @type@ wrapper, not used to enforce invariants.
 newtype SchemaBytes
     = SchemaBytes { _unSchemaBytes :: ByteString }
@@ -199,20 +163,7 @@ newSchema
     -> Maybe Text
        -- ^ Schema name
     -> m (Either Invalid SchemaLink)
-newSchema sch name = do
-    station <- ask
-    i <- liftBase (_imNewId (_stationImplementation station))
-    setSchema i sch name
-
-setSchema
-    :: Station m n
-    => Id
-    -> SchemaBytes
-    -> Maybe Text
-       -- ^ Schema name
-    -> m (Either Invalid SchemaLink)
-setSchema i sch name =
-    fmap schemaLink <$> set i card
+newSchema sch name = fmap schemaLink <$> new card
   where
     card :: CardBytes
     card = Card
@@ -221,35 +172,11 @@ setSchema i sch name =
         , _cardName     = name
         }
 
-    schemaLink :: VersionHash -> SchemaLink
-    schemaLink hash = SchemaLink Link
-        { _linkId   = i
-        , _linkHash = BVVersion hash
-        }
-
--- | Like 'setSchema', but if the card exists keep the lined side the same.
--- Otherwise choose defaults for it such as 'Nothing' for the name.
-setSchemaUnlined
-    :: Station m n
-    => Id
-    -> SchemaBytes
-    -> Maybe Text
-    -> m (Either Invalid SchemaLink)
-setSchemaUnlined i sch name =
-    fmap schemaLink <$> setUnlined i card
-  where
-    card :: CardBytes
-    card = Card
-        { _cardSchema   = SO.customSchemaLink
-        , _cardInstance = _unSchemaBytes sch
-        , _cardName     = name
-        }
-
-    schemaLink :: VersionHash -> SchemaLink
-    schemaLink hash = SchemaLink Link
-        { _linkId   = i
-        , _linkHash = BVVersion hash
-        }
+    -- NOTE: By turning a @VersionHash@ into a @BlobOrVersionHash@
+    -- here using @BVVersion@ we lose data about what we're returning.
+    -- Should this be changed?
+    schemaLink :: Link VersionHash -> SchemaLink
+    schemaLink = SchemaLink . fmap BVVersion
 
 -- * Convenience
 --

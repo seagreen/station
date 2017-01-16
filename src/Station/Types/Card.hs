@@ -24,7 +24,6 @@ newtype SchemaLink
 instance HA.Hashable SchemaLink
 
 type CardBytes = Card ByteString
-type CardMag = Card BlobHash
 
 data Card a = Card
 
@@ -39,7 +38,7 @@ data Card a = Card
     } deriving (Eq, Show, Functor)
 
 instance FromJSON a => FromJSON (Card a) where
-    parseJSON = withObject "CardMag" $ \o -> Card
+    parseJSON = withObject "Card" $ \o -> Card
         <$> o .: "schema"
         <*> o .: "instance"
         <*> o .:! "name"
@@ -53,12 +52,12 @@ instance ToJSON a => ToJSON (Card a) where
                    [ "name" `optionalPair` _cardName a
                    ]
 
-magFromCard :: CardBytes -> CardMag
+magFromCard :: CardBytes -> Card BlobHash
 magFromCard a = a { _cardInstance = hashFront a }
 
 cardFromMag
     :: (BlobHash -> Maybe ByteString)
-    -> CardMag
+    -> Card BlobHash
     -> Maybe CardBytes
 cardFromMag f card = do
     front <- f (_cardInstance card)

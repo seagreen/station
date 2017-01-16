@@ -8,7 +8,7 @@ Websites have pages.
 
 Webapps have posts.
 
-Unix systems have hierarchical files.
+Unix systems have mutable, hierarchical files.
 
 None of these provide a solid foundation for personal computing. Let's see if we can do better.
 
