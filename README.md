@@ -16,9 +16,9 @@ None of these provide a solid foundation for personal computing. Let's see if we
 
 Four things:
 
-1. An idea: the _card_. A card is an immutable piece of data containing two [content-addressed](https://en.wikipedia.org/wiki/Content-addressable_storage) links-- one to a schema and another to a piece of data that's an instance of that schema. It may also contain other information about the instance such as its name, source, and date of creation.
+1. An idea: the _card_. The card is a replacement for the file. However, unlike files, cards are schema'd, immutable and actually contain relevant metadata.
 
-  Some advantages of this design are listed [here](./docs/advantages.md).
+  Additional advantages of this approach are listed [here](./docs/advantages.md).
 
 2. A second idea: the _card store_. This is simply a datastore built on cards.
 

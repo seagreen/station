@@ -35,6 +35,20 @@ new     :: Station m n =>                     CardBytes -> m (Either Invalid (Li
 update  :: Station m n => Link VersionHash -> CardBytes -> m (Either Invalid VersionHash)
 archive :: Station m n => Link VersionHash              -> m ()
 
+data IdConflict
+    = IdConflict Id [VersionInfo]
+    | IdConflictHashes Id [VersionHash]
+    deriving (Show, Typeable)
+
+instance Exception IdConflict
+
+resolve i = do
+    deck <- get
+    case SP.resolveId deck i of
+        []            -> pure Nothing
+        [versionInfo] -> pure (Just versionInfo)
+        versionInfos  -> throwM (IdConflict i versionInfos)
+
 new card = do
     station <- ask
     i       <- liftBase (_imNewId (_stationImplementation station))
@@ -56,13 +70,6 @@ data ParentHasChanged
 
 instance Exception ParentHasChanged
 
-data IdConflict
-    = IdConflict Id [VersionInfo]
-    | IdConflictHashes Id [VersionHash]
-    deriving (Show, Typeable)
-
-instance Exception IdConflict
-
 update (Link i argHash) card = do
     station <- ask
     deck    <- get
@@ -77,13 +84,6 @@ update (Link i argHash) card = do
                 Left e             -> pure (Left e)
                 Right (deck',hash) -> put deck' >> pure (Right hash)
         parents -> throwM (IdConflict i parents)
-
-resolve i = do
-    deck <- get
-    case SP.resolveId deck i of
-        []            -> pure Nothing
-        [versionInfo] -> pure (Just versionInfo)
-        versionInfos  -> throwM (IdConflict i versionInfos)
 
 -- NOTE: If the target card isn't found then nothing happens.
 archive (Link i argHash) = do
