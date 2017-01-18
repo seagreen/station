@@ -32,13 +32,15 @@ Station's main inspirations are [Tent](https://tent.io/) and [Camlistore](https:
 
 # Design
 
-Card stores are built in layers of abstraction. Higher layers know about lower layers but not vice-versa. We'll explore these layers using examples from the first card store implementation, _Station_.
+Card stores are built in layers of abstraction. Higher layers know about lower layers but not vice-versa. We'll explore these layers using the first card store implementation, _Station_.
 
 ## Layer 1 - Blobs
 
+(Blobs are the same as in [Camlistore](https://camlistore.org/doc/terms#blob))
+
 Finite sequences of 8-bit bytes.
 
-Identified by a hash or hashes (Station uses a [base64url](https://tools.ietf.org/html/rfc4648#section-5) encoded [BLAKE2b](https://blake2.net/) hash).
+Identified by a hash or hashes. Station uses a [base64url](https://tools.ietf.org/html/rfc4648#section-5) encoded [BLAKE2b](https://blake2.net/) hash.
 
 Immutable (in the Haskell sense of being [inhabited by ⊥](https://en.wikipedia.org/wiki/Bottom_type), this is to reflect the reality that sometimes data is deleted locally to save space).
 
