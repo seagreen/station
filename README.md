@@ -16,7 +16,7 @@ None of these provide a solid foundation for personal computing. Let's see if we
 
 Four things:
 
-1. An idea: the _card_. The card is a replacement for the file. However, unlike files, cards are schema'd, immutable and actually contain relevant metadata.
+1. An idea: the _card_. The card is a replacement for the hierarchical file. However, unlike traditonal files, cards are schema'd, immutable and actually contain relevant metadata.
 
   Additional advantages of this approach are listed [here](./docs/advantages.md).
 
@@ -32,7 +32,7 @@ Station's main inspirations are [Tent](https://tent.io/) and [Camlistore](https:
 
 # Design
 
-Card stores are built in layers of abstraction. Higher layers know about lower layers but not vice-versa. We'll explore these layers using the first card store implementation, _Station_.
+Card stores are built in layers of abstraction. Higher layers know about lower layers but not vice-versa. We'll explore these layers using the first card store implementation, Station.
 
 ## Layer 1 - Blobs
 
