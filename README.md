@@ -32,17 +32,17 @@ Station's main inspirations are [Tent](https://tent.io/) and [Camlistore](https:
 
 # Design
 
-Card stores are built in layers of abstraction. Higher layers know about lower layers but not vice-versa. We'll explore these layers using the first card store implementation, Station.
+(This covers the design of Station, not card stores in general. For info on the latter, see [card_stores.md](./docs/card_stores.md).)
+
+Station is built in layers of abstraction. Higher layers know about lower layers but not vice-versa. Let's start at the bottom ...
 
 ## Layer 1 - Blobs
 
-(Blobs are the same as in [Camlistore](https://camlistore.org/doc/terms#blob))
-
-Finite sequences of 8-bit bytes.
-
-Identified by a hash or hashes. Station uses a [base64url](https://tools.ietf.org/html/rfc4648#section-5) encoded [BLAKE2b](https://blake2.net/) hash.
+Finite sequences of 8-bit bytes. This is the same as in [Camlistore](https://camlistore.org/doc/terms#blob).
 
 Immutable (in the Haskell sense of being [inhabited by ⊥](https://en.wikipedia.org/wiki/Bottom_type), this is to reflect the reality that sometimes data is deleted locally to save space).
+
+Identified by a [base64url](https://tools.ietf.org/html/rfc4648#section-5) encoded [BLAKE2b](https://blake2.net/) hash. More hashes may be added later.
 
 ## Layer 2 - Cards
 
@@ -68,7 +68,9 @@ For instance, say we have this piece of JSON data (rendered with `\n` unescaped 
 
 Say its hash is `abc`.
 
-Next we need a schema. The prototype of Station supports a single schema specification: a modified version of [JSON Schema](https://tools.ietf.org/html/draft-fge-json-schema-validation-00). Note that this restricts the blobs supported by the prototype implementation to JSON, as JSON Schema only works on JSON. Ways to schema other types of data will be added in future implementations.
+Next we need a schema. The prototype of Station supports a single schema specification: a modified version of [JSON Schema](http://json-schema.org/) Draft 4. For more information see [schema.md](./docs/schema.md).
+
+Note that this restricts the card instances supported by the prototype implementation to JSON, as JSON Schema only works on JSON. Ways to schema other types of data will be added in future implementations.
 
 Here's an example schema for song excerpts:
 ```json
