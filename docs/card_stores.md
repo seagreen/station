@@ -1,3 +1,5 @@
+(This page is even more of a draft than the rest of the documentation. Until more than one card store has been written it will be hard to describe what actually distinguishes them.)
+
 ## Definition
 
 Every card store contains blobs, cards and versions. Cards must specify a schema blob and a blob that's an instance of that schema. Versions must specify a card blob (or the deletion of one), the ID of that card, and the version's parents.
