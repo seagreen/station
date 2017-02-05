@@ -29,15 +29,15 @@ data Version a = Version
     , _versionTime    :: Maybe TAI
     } deriving (Eq, Show, Functor)
 
-instance FromJSON (Version CardHash) where
-    parseJSON = withObject "Version CardHash" $ \o -> Version
+instance FromJSON a => FromJSON (Version a) where
+    parseJSON = withObject "Version a" $ \o -> Version
         <$> o .: "id"
         <*> o .: "parents"
         <*> o .: "card"
         <*> o .:! "authors" .!= mempty
         <*> o .:! "time"
 
-instance ToJSON (Version CardHash) where
+instance ToJSON a => ToJSON (Version a) where
     toJSON a = object $
                    [ "id"      .= _versionId a
                    , "parents" .= _versionParents a

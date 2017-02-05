@@ -14,7 +14,7 @@ import           Station.Types.Version
 -- that URL.
 newtype VersionLocation = VersionLocation
     { _unVersionLocation :: Maybe Text }
-    deriving (Eq, Ord, Show, Generic)
+    deriving (Eq, Ord, Show, Generic, FromJSON, ToJSON)
 
 instance HA.Hashable VersionLocation
 
@@ -26,6 +26,19 @@ data VersionContext a = VersionContext
     , _vcVersion  :: Version a
     , _vcLocation :: NonEmpty VersionLocation
     } deriving (Eq, Show, Functor)
+
+instance FromJSON a => FromJSON (VersionContext a) where
+    parseJSON = withObject "VersionContext a" $ \o -> VersionContext
+        <$> o .: "hash"
+        <*> o .: "version"
+        <*> o .: "locations"
+
+instance ToJSON a => ToJSON (VersionContext a) where
+    toJSON a = object
+        [ "hash"      .= _vcHash a
+        , "version"   .= _vcVersion a
+        , "locations" .= _vcLocation a
+        ]
 
 linkFromVersionContext :: VersionContext a -> Link VersionHash
 linkFromVersionContext vc = Link
