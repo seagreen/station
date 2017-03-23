@@ -39,7 +39,10 @@ config = AP.Config
 
 -- | This will throw an error if the argument isn't valid JSON.
 convertJQ :: Text -> IO Text
-convertJQ jsonText = TU.strict (TU.inshell jqCommand (pure jsonText))
+convertJQ jsonText = TU.strict (TU.inshell jqCommand inpt)
   where
+    inpt :: TU.Shell TU.Line
+    inpt = TU.select (TU.textToLines jsonText)
+
     jqCommand :: Text
     jqCommand = "jq --compact-output --sort-keys ."

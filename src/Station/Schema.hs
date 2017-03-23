@@ -74,6 +74,7 @@ d4Modified getContent scope =
                          D4.IRInvalidItems e      -> FailureItems e
                          D4.IRInvalidAdditional e -> FailureAdditionalItems e)
             (D4.itemsRelatedValidator recurse)
+        -- NOTE: We don't track @"definitions"@.
 
         , dimap f FailureMaxProperties D4.maxPropertiesValidator
         , dimap f FailureMinProperties D4.minPropertiesValidator

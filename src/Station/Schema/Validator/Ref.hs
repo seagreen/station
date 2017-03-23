@@ -5,9 +5,10 @@ import           Import
 
 import qualified Data.List.NonEmpty             as NE
 import qualified Data.Text                      as T
+import qualified JSONPointer                    as JP
 import qualified JSONSchema.Validator.Draft4    as VAL
-import           JSONSchema.Validator.Reference (resolveFragment)
 import           JSONSchema.Validator.Types     (Validator(..))
+import           Network.HTTP.Types.URI         (urlDecode)
 
 import           Station.Lookup                 (bytesFromVersionHash)
 import qualified Station.Types                  as ST
@@ -77,3 +78,15 @@ refVal getContent scope f ref x =
         case eitherDecodeStrict bts of
             Left e  -> Left (RefParseFailure ref bts (T.pack e))
             Right a -> Right a
+
+resolveFragment
+    :: (FromJSON schema, ToJSON schema)
+    => Maybe Text
+    -> schema
+    -> Maybe schema
+resolveFragment Nothing schema        = Just schema
+resolveFragment (Just pointer) schema = do
+    let urlDecoded = decodeUtf8 . urlDecode True . encodeUtf8 $ pointer
+    p <- either (const Nothing) Just (JP.unescape urlDecoded)
+    x <- either (const Nothing) Just (JP.resolve p (toJSON schema))
+    fromJSONMaybe x
