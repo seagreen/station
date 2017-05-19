@@ -5,9 +5,9 @@ packages:
     extra-dep: true
 
 extra-deps:
-  # - hjsonschema-1.5.0.0
- - hjsonpointer-1.1.0.1
- - aeson-1.1.0.0
+ - hjsonschema-1.6.2
+ - hjsonpointer-1.1.1
+ - aeson-1.2.0.0
 
 nix:
   enable: true
